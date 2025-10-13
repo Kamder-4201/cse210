@@ -4,16 +4,35 @@ using System.IO;
 
 public class Activity
 {
-    // Shared properties
-    public string Name { get; set; }
-    public string Description { get; set; }
-    public int Duration { get; set; }
+    // 🔒 Private backing fields
+    private string _name;
+    private string _description;
+    private int _duration;
+
+    // 🔓 Public properties
+    public string Name
+    {
+        get { return _name; }
+        set { _name = value; }
+    }
+
+    public string Description
+    {
+        get { return _description; }
+        set { _description = value; }
+    }
+
+    public int Duration
+    {
+        get { return _duration; }
+        set { _duration = value; }
+    }
 
     // Constructor
     public Activity(string name, string description)
     {
-        Name = name;
-        Description = description;
+        _name = name;
+        _description = description;
     }
 
     // Common start message
@@ -24,7 +43,7 @@ public class Activity
         Console.Write("Enter duration (seconds): ");
         Duration = int.Parse(Console.ReadLine());
         Console.WriteLine("Prepare to begin...");
-        ShowCountdown(3);
+        ShowSpinner(3);
     }
 
     // Common end message
@@ -32,7 +51,7 @@ public class Activity
     {
         Console.WriteLine("\nGood job! You’ve completed the activity!");
         Console.WriteLine($"Activity: {Name} | Duration: {Duration} seconds");
-        ShowCountdown(3);
+        ShowSpinner(3);
         // Log the session automatically
         LogSession();
     }
@@ -47,6 +66,21 @@ public class Activity
         }
         Console.WriteLine();
     }
+
+    protected void ShowSpinner(int seconds)
+{
+    string[] spinner = { "|", "/", "-", "\\" };
+    DateTime endTime = DateTime.Now.AddSeconds(seconds);
+    int i = 0;
+
+    while (DateTime.Now < endTime)
+    {
+        Console.Write(spinner[i]);
+        Thread.Sleep(200);
+        Console.Write("\b \b"); // erase spinner
+        i = (i + 1) % spinner.Length;
+    }
+}
 
     // Inside the Activity class
     protected void LogSession()
