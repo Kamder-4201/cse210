@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;  // needed for Thread.Sleep
+
 
 public class GoalManager
 {
@@ -135,6 +137,7 @@ public class GoalManager
         Console.WriteLine($"Progress: {completed}/{_goals.Count} goals completed.");
     }
 
+
     // ===== Save Goals =====
     // public void SaveGoals(string filename)
     // {
@@ -155,19 +158,16 @@ public class GoalManager
     {
         try
         {
+            ShowSpinner("Saving goals... ");
+
             using (StreamWriter writer = new StreamWriter(filename))
             {
-                // Always save the score first
                 writer.WriteLine($"Score:{_score}");
-
-                // Write each goal’s data line
                 foreach (Goal g in _goals)
-                {
                     writer.WriteLine(g.GetStringRepresentation());
-                }
             }
 
-            Console.WriteLine($"\n✅ Goals successfully saved to '{filename}'!");
+            Console.WriteLine($"✅ Goals successfully saved to '{filename}'.");
         }
         catch (Exception ex)
         {
@@ -238,6 +238,8 @@ public class GoalManager
 
         try
         {
+            ShowSpinner("Loading goals... ");
+
             string[] lines = File.ReadAllLines(filename);
             if (lines.Length == 0)
             {
@@ -248,19 +250,12 @@ public class GoalManager
             _goals.Clear();
             _score = 0;
 
-            // First line: Score
             if (lines[0].StartsWith("Score:"))
-            {
                 _score = int.Parse(lines[0].Split(':')[1]);
-            }
 
-            // Remaining lines: goals
             for (int i = 1; i < lines.Length; i++)
             {
-                string line = lines[i];
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                string[] parts = line.Split(':');
+                string[] parts = lines[i].Split(':');
                 if (parts.Length < 2) continue;
 
                 string type = parts[0];
@@ -270,9 +265,7 @@ public class GoalManager
                 {
                     case "SimpleGoal":
                         _goals.Add(new SimpleGoal(data[0], data[1], int.Parse(data[2]))
-                        {
-                            IsComplete = bool.Parse(data[3])
-                        });
+                        { IsComplete = bool.Parse(data[3]) });
                         break;
 
                     case "EternalGoal":
@@ -284,25 +277,69 @@ public class GoalManager
                             data[0], data[1], int.Parse(data[2]),
                             int.Parse(data[3]), int.Parse(data[5])
                         );
-
-                        // Set current progress
-                        int current = int.Parse(data[4]);
-                        for (int j = 0; j < current; j++) cg.RecordEvent();
-
-                        // Restore completion state
+                        for (int j = 0; j < int.Parse(data[4]); j++) cg.RecordEvent();
                         if (bool.Parse(data[6])) cg.IsComplete = true;
-
                         _goals.Add(cg);
                         break;
                 }
             }
 
-            Console.WriteLine($"\n✅ Goals loaded successfully from '{filename}'!");
+            Console.WriteLine($"✅ Goals loaded successfully from '{filename}'.");
         }
         catch (Exception ex)
         {
             Console.WriteLine($"⚠️ Error loading goals: {ex.Message}");
         }
+    }
+
+    // ===== Spinner Animation =====
+    private void ShowSpinner(string message, int durationSeconds = 2)
+    {
+        Console.Write(message);
+        char[] spinner = { '|', '/', '-', '\\' };
+
+        // Each spin frame lasts 200 ms
+        int totalFrames = durationSeconds * 5;
+
+        for (int i = 0; i < totalFrames; i++)
+        {
+            Console.Write(spinner[i % spinner.Length]);
+            Thread.Sleep(200);
+            Console.Write("\b"); // backspace to erase spinner char
+        }
+
+        Console.WriteLine(" Done!");
+    }
+
+    // ===== Summary Screen =====
+    private void ShowSummary(string action)
+    {
+        Console.WriteLine("\n==============================");
+        Console.WriteLine($"📊 {action} Summary");
+        Console.WriteLine("==============================");
+
+        // Show total score
+        Console.WriteLine($"Total Score: {_score} points");
+
+        // Count total and completed goals
+        int completed = 0;
+        foreach (Goal g in _goals)
+        {
+            if (g.IsComplete)
+                completed++;
+        }
+
+        Console.WriteLine($"Goals Completed: {completed}/{_goals.Count}");
+
+        // Display a motivational message
+        if (completed == 0)
+            Console.WriteLine("Let's get started on your first goal!");
+        else if (completed < _goals.Count)
+            Console.WriteLine("You're making great progress! Keep it up!");
+        else
+            Console.WriteLine("🎉 All goals completed! Time to set new ones!");
+
+        Console.WriteLine("==============================\n");
     }
 
 }
