@@ -1,0 +1,2 @@
+Score:0
+SimpleGoal:Run|run once a week 10km total|100|False

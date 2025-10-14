@@ -136,66 +136,173 @@ public class GoalManager
     }
 
     // ===== Save Goals =====
+    // public void SaveGoals(string filename)
+    // {
+    //     using (StreamWriter writer = new StreamWriter(filename))
+    //     {
+    //         writer.WriteLine($"Score:{_score}");
+    //         foreach (Goal g in _goals)
+    //         {
+    //             writer.WriteLine(g.GetStringRepresentation());
+    //         }
+    //     }
+    //     Console.WriteLine("Goals saved!");
+    // }
+    // old code - not deleting for reference.
+
+    // ===== Save Goals =====
     public void SaveGoals(string filename)
     {
-        using (StreamWriter writer = new StreamWriter(filename))
+        try
         {
-            writer.WriteLine($"Score:{_score}");
-            foreach (Goal g in _goals)
+            using (StreamWriter writer = new StreamWriter(filename))
             {
-                writer.WriteLine(g.GetStringRepresentation());
+                // Always save the score first
+                writer.WriteLine($"Score:{_score}");
+
+                // Write each goal’s data line
+                foreach (Goal g in _goals)
+                {
+                    writer.WriteLine(g.GetStringRepresentation());
+                }
             }
+
+            Console.WriteLine($"\n✅ Goals successfully saved to '{filename}'!");
         }
-        Console.WriteLine("Goals saved!");
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Error saving goals: {ex.Message}");
+        }
     }
+
+
+    // ===== Load Goals =====
+    // public void LoadGoals(string filename)
+    // {
+    //     if (!File.Exists(filename))
+    //     {
+    //         Console.WriteLine("No saved goals found.");
+    //         return;
+    //     }
+
+    //     string[] lines = File.ReadAllLines(filename);
+    //     _goals.Clear();
+
+    //     if (lines.Length > 0 && lines[0].StartsWith("Score:"))
+    //     {
+    //         _score = int.Parse(lines[0].Split(':')[1]);
+    //     }
+
+    //     for (int i = 1; i < lines.Length; i++)
+    //     {
+    //         string[] parts = lines[i].Split(':');
+    //         string type = parts[0];
+    //         string[] data = parts[1].Split('|');
+
+    //         switch (type)
+    //         {
+    //             case "SimpleGoal":
+    //                 _goals.Add(new SimpleGoal(data[0], data[1], int.Parse(data[2]))
+    //                 {
+    //                     IsComplete = bool.Parse(data[3])
+    //                 });
+    //                 break;
+
+    //             case "EternalGoal":
+    //                 _goals.Add(new EternalGoal(data[0], data[1], int.Parse(data[2])));
+    //                 break;
+
+    //             case "ChecklistGoal":
+    //                 ChecklistGoal cg = new ChecklistGoal(
+    //                     data[0], data[1], int.Parse(data[2]),
+    //                     int.Parse(data[3]), int.Parse(data[5])
+    //                 );
+    //                 for (int j = 0; j < int.Parse(data[4]); j++) cg.RecordEvent();
+    //                 _goals.Add(cg);
+    //                 break;
+    //         }
+    //     }
+
+    //     Console.WriteLine("Goals loaded successfully!");
+    // }
+    // old code - not deleting for reference.
 
     // ===== Load Goals =====
     public void LoadGoals(string filename)
     {
         if (!File.Exists(filename))
         {
-            Console.WriteLine("No saved goals found.");
+            Console.WriteLine($"⚠️ No save file found at '{filename}'.");
             return;
         }
 
-        string[] lines = File.ReadAllLines(filename);
-        _goals.Clear();
-
-        if (lines.Length > 0 && lines[0].StartsWith("Score:"))
+        try
         {
-            _score = int.Parse(lines[0].Split(':')[1]);
-        }
-
-        for (int i = 1; i < lines.Length; i++)
-        {
-            string[] parts = lines[i].Split(':');
-            string type = parts[0];
-            string[] data = parts[1].Split('|');
-
-            switch (type)
+            string[] lines = File.ReadAllLines(filename);
+            if (lines.Length == 0)
             {
-                case "SimpleGoal":
-                    _goals.Add(new SimpleGoal(data[0], data[1], int.Parse(data[2]))
-                    {
-                        IsComplete = bool.Parse(data[3])
-                    });
-                    break;
-
-                case "EternalGoal":
-                    _goals.Add(new EternalGoal(data[0], data[1], int.Parse(data[2])));
-                    break;
-
-                case "ChecklistGoal":
-                    ChecklistGoal cg = new ChecklistGoal(
-                        data[0], data[1], int.Parse(data[2]),
-                        int.Parse(data[3]), int.Parse(data[5])
-                    );
-                    for (int j = 0; j < int.Parse(data[4]); j++) cg.RecordEvent();
-                    _goals.Add(cg);
-                    break;
+                Console.WriteLine("⚠️ Save file is empty.");
+                return;
             }
-        }
 
-        Console.WriteLine("Goals loaded successfully!");
+            _goals.Clear();
+            _score = 0;
+
+            // First line: Score
+            if (lines[0].StartsWith("Score:"))
+            {
+                _score = int.Parse(lines[0].Split(':')[1]);
+            }
+
+            // Remaining lines: goals
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                string[] parts = line.Split(':');
+                if (parts.Length < 2) continue;
+
+                string type = parts[0];
+                string[] data = parts[1].Split('|');
+
+                switch (type)
+                {
+                    case "SimpleGoal":
+                        _goals.Add(new SimpleGoal(data[0], data[1], int.Parse(data[2]))
+                        {
+                            IsComplete = bool.Parse(data[3])
+                        });
+                        break;
+
+                    case "EternalGoal":
+                        _goals.Add(new EternalGoal(data[0], data[1], int.Parse(data[2])));
+                        break;
+
+                    case "ChecklistGoal":
+                        ChecklistGoal cg = new ChecklistGoal(
+                            data[0], data[1], int.Parse(data[2]),
+                            int.Parse(data[3]), int.Parse(data[5])
+                        );
+
+                        // Set current progress
+                        int current = int.Parse(data[4]);
+                        for (int j = 0; j < current; j++) cg.RecordEvent();
+
+                        // Restore completion state
+                        if (bool.Parse(data[6])) cg.IsComplete = true;
+
+                        _goals.Add(cg);
+                        break;
+                }
+            }
+
+            Console.WriteLine($"\n✅ Goals loaded successfully from '{filename}'!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Error loading goals: {ex.Message}");
+        }
     }
+
 }
