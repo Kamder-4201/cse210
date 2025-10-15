@@ -31,4 +31,5 @@ public class Running : Activity
     {
         return GetLengthMinutes() / _distance;
     }
+    
 }
