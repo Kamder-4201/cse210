@@ -1,4 +1,4 @@
-// Exceed Requirement: Added summary screen for save/load 
+// Exceed Requirement: Added summary screen for save/load + motivational quote when using load/save
 using System;
 
 class Program

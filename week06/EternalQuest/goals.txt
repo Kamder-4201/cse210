@@ -1,4 +1,3 @@
 Score:100
-SimpleGoal:Run|run 10km|100|True
-SimpleGoal:run|run 10km once a week|100|False
-SimpleGoal:swim|swim 30 minutes per week|100|False
+SimpleGoal:Run|run for 2km this week|100|True
+SimpleGoal:Do breathing exercises|inhale exhale|50|False

@@ -168,6 +168,8 @@ public class GoalManager
             }
 
             Console.WriteLine($"✅ Goals successfully saved to '{filename}'.");
+            //show your summary (and motivational quote)
+            ShowSummary("Save");
         }
         catch (Exception ex)
         {
@@ -285,6 +287,8 @@ public class GoalManager
             }
 
             Console.WriteLine($"✅ Goals loaded successfully from '{filename}'.");
+            // show your summary (and motivational quote)
+            ShowSummary("Load");
         }
         catch (Exception ex)
         {
@@ -340,6 +344,28 @@ public class GoalManager
             Console.WriteLine("🎉 All goals completed! Time to set new ones!");
 
         Console.WriteLine("==============================\n");
+
+        //Add motivation at the end
+        ShowMotivation();
+    }
+
+    // ===== Random Motivational Quote =====
+    private void ShowMotivation()
+    {
+        string[] quotes = {
+            "Keep going — progress is progress!",
+            "Small steps lead to big changes!",
+            "You’re closer than you think!",
+            "Faith and effort always pay off!",
+            "Consistency beats intensity!",
+            "Every goal achieved begins with a single step.",
+            "You’re leveling up your real-life XP!",
+            "Stay steady — greatness builds quietly."
+        };
+
+        Random rand = new Random();
+        int index = rand.Next(quotes.Length);
+        Console.WriteLine($"\n💬 {quotes[index]}");
     }
 
 }
