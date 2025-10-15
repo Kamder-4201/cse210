@@ -26,6 +26,19 @@ class Program
         // {
         //     Console.WriteLine(activity.GetSummary());
         // }
+
+        // Create sample activities
+        Running run = new Running(new DateTime(2025, 10, 13), 30, 5.0);  // 5 km in 30 min
+        Cycling cycle = new Cycling(new DateTime(2025, 10, 13), 40, 20.0); // 20 kph for 40 min
+        Swimming swim = new Swimming(new DateTime(2025, 10, 13), 30, 20);  // 20 laps
+
+        List<Activity> activities = new List<Activity> { run, cycle, swim };
+
+        foreach (Activity activity in activities)
+        {
+            Console.WriteLine(activity.GetSummary());
+        }
+
     }
     
 }

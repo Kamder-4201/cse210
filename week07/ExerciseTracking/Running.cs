@@ -2,34 +2,28 @@ using System;
 
 public class Running : Activity
 {
-    //  Private field unique to Running
-    private double _distance; // in miles
+    private double _distance; // in kilometers
 
-    //  Constructor
     public Running(DateTime date, int lengthMinutes, double distance)
-        : base(date, lengthMinutes) // call base constructor
+        : base(date, lengthMinutes)
     {
         _distance = distance;
     }
 
-    //  Overridden methods
-
-    // Distance is already known (user input)
     public override double GetDistance()
     {
         return _distance;
     }
 
-    // Speed = (distance / minutes) * 60
+    // Speed (kph) = (distance / minutes) * 60
     public override double GetSpeed()
     {
         return (_distance / GetLengthMinutes()) * 60;
     }
 
-    // Pace = minutes / distance
+    // Pace (min per km) = minutes / distance
     public override double GetPace()
     {
         return GetLengthMinutes() / _distance;
     }
-    
 }
