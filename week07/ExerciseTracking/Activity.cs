@@ -36,12 +36,12 @@ public class Activity
     // 🧾 Shared summary method
     public virtual string GetSummary()
     {
-        // Uses polymorphic methods — each subclass’s version will run automatically
-        string summary = $"{_date.ToString("dd MMM yyyy")} Activity " +
-                         $"({_lengthMinutes} min): " +
-                         $"Distance {GetDistance():0.0} miles, " +
-                         $"Speed {GetSpeed():0.0} mph, " +
-                         $"Pace: {GetPace():0.0} min per mile";
+        string summary = $"{GetDate():dd MMM yyyy} {this.GetType().Name} " +
+                        $"({GetLengthMinutes()} min): " +
+                        $"Distance {GetDistance():0.0} km, " +
+                        $"Speed {GetSpeed():0.0} kph, " +
+                        $"Pace: {GetPace():0.00} min per km";
         return summary;
     }
+
 }

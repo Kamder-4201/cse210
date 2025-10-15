@@ -15,17 +15,17 @@ class Program
         // Running run = new Running(new DateTime(2025, 10, 13), 30, 3.0); // 3 miles in 30 min
         // Console.WriteLine(run.GetSummary());
 
-        // Create one of each type for testing
-        Running run = new Running(new DateTime(2025, 10, 13), 30, 3.0);
-        Cycling cycle = new Cycling(new DateTime(2025, 10, 13), 30, 12.0);
+        // // Create one of each type for testing
+        // Running run = new Running(new DateTime(2025, 10, 13), 30, 3.0);
+        // Cycling cycle = new Cycling(new DateTime(2025, 10, 13), 30, 12.0);
 
-        // Store both in the same list to demonstrate polymorphism
-        List<Activity> activities = new List<Activity> { run, cycle };
+        // // Store both in the same list to demonstrate polymorphism
+        // List<Activity> activities = new List<Activity> { run, cycle };
 
-        foreach (Activity activity in activities)
-        {
-            Console.WriteLine(activity.GetSummary());
-        }
+        // foreach (Activity activity in activities)
+        // {
+        //     Console.WriteLine(activity.GetSummary());
+        // }
     }
     
 }
