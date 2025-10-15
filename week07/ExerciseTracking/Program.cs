@@ -34,11 +34,12 @@ class Program
 
         List<Activity> activities = new List<Activity> { run, cycle, swim };
 
+        Console.WriteLine("=== Activity Summary ===");
         foreach (Activity activity in activities)
         {
             Console.WriteLine(activity.GetSummary());
         }
-
+        Console.WriteLine("=========================");
     }
     
 }
